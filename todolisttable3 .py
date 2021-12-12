@@ -159,11 +159,11 @@ class Ui_MainWindow(object):
         db = sqlite3.connect("alltask.db")
         db_cursor = db.cursor()
         try:
-            db_cursor.execute("CREATE TABLE to_do (id INTEGER PRIMARY KEY AUTOINCREMENT,task text,date text)")
+            db_cursor.execute("CREATE TABLE to_do (task text,date text)")
         except:
             pass
 
-        db_cursor.execute("SELECT * FROM to_do order by date asc")
+        db_cursor.execute("SELECT * FROM to_do ")
 
         self.tableWidget.clearContents()
         self.tableWidget.setRowCount(0)
@@ -186,12 +186,13 @@ class Ui_MainWindow(object):
         if len(new_task) == 0 or len(new_date) == 0:
             self.infolabel.setText("Please enter a task and a date")
             return None
-        if len(new_date)<10:
-            self.infolabel.setText("Incorrect form of date/ leading zero is allow")
-            return None
-        if new_date.isalpha():
+        elif new_date.isalpha() or new_date.isalnum():
             self.infolabel.setText("Incorrect form of date")
             return None
+        elif len(new_date)<10:
+            self.infolabel.setText("Incorrect form of date/ leading zero is allow")
+            return None
+        
             
 
     
@@ -209,15 +210,13 @@ class Ui_MainWindow(object):
         selected = self.tableWidget.selectedItems()
         # delete row
         for index in selected:
-            idx = self.tableWidget.item(index.row(),0)
-            idx = idx.text()
             name = self.tableWidget.item(index.row(),1)
             date = self.tableWidget.item(index.row(),0)
             db_cursor.execute(f"DELETE FROM to_do WHERE task = '{name.text()}' AND date = '{date.text()}'")
             db_cursor.execute("delete from sqlite_sequence where name='to_do';")
             db.commit()
 
-        db_cursor.execute("SELECT * FROM to_do order by date asc")
+        db_cursor.execute("SELECT * FROM to_do ")
         self.tableWidget.clearContents()
         self.tableWidget.setRowCount(0)
 
@@ -240,7 +239,7 @@ class Ui_MainWindow(object):
             db.commit()
      
      
-    #เริ่ม ggcalrendar button    
+    #เริ่ม ggcalenndar button    
     def create(self):
         selected = self.tableWidget.selectedItems()
         
@@ -295,7 +294,6 @@ class Ui_MainWindow(object):
         #create new events
           
 
-        
             
         def create_event(start_time, summary):
             
