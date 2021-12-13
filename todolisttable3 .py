@@ -1,7 +1,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets 
 import sqlite3
-from PyQt5 import QtCore, QtGui, QtWidgets
 import pickle
 import os
 import datetime
@@ -10,14 +9,14 @@ from google_auth_oauthlib.flow import Flow, InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 from google.auth.transport.requests import Request
-from datetime import datetime, timedelta
+from datetime import datetime
 from PyQt5.QtWidgets import QMessageBox
 
 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("To-do-list")
+        MainWindow.setObjectName("MainWindow")
         MainWindow.setMaximumSize(QtCore.QSize(610, 450))
         MainWindow.resize(610, 450)
         MainWindow.setStyleSheet("background-color: rgb(252, 255, 217);")
@@ -105,7 +104,7 @@ class Ui_MainWindow(object):
         self.lineEdit.setObjectName("lineEdit")
         
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
-        self.tableWidget.setGeometry(QtCore.QRect(90, 155, 430, 185))
+        self.tableWidget.setGeometry(QtCore.QRect(90, 155, 430, 190))
         font = QtGui.QFont()
         font.setFamily("Century Gothic")
         font.setPointSize(10)
@@ -114,14 +113,16 @@ class Ui_MainWindow(object):
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(2)
         self.tableWidget.setColumnWidth(0,120)
-        self.tableWidget.setColumnWidth(1,260)
+        self.tableWidget.setColumnWidth(1,290)
         self.tableWidget.setRowCount(0)
+        
         item = QtWidgets.QTableWidgetItem()
         font = QtGui.QFont()
         font.setFamily("Century Gothic")
         font.setPointSize(12)
         item.setFont(font)
         self.tableWidget.setHorizontalHeaderItem(0, item)
+        
         item = QtWidgets.QTableWidgetItem()
         font = QtGui.QFont()
         font.setFamily("Century Gothic")
@@ -166,11 +167,11 @@ class Ui_MainWindow(object):
 
 
     def connect_database(self):
-        global db, db_cursor, tasks, dates, x , rows
+        global db, db_cursor
         db = sqlite3.connect("alltask.db")
         db_cursor = db.cursor()
         try:
-            db_cursor.execute("CREATE TABLE to_do (id INTEGER PRIMARY KEY AUTOINCREMENT,task text,date text)")
+            db_cursor.execute("CREATE TABLE to_do (task text,date text)")
         except:
             pass
 
@@ -195,32 +196,32 @@ class Ui_MainWindow(object):
         new_task = self.lineEdit.text()
         new_date = self.lineEdit_2.text()
         aaa = new_date.split("/")
+        
         if len(new_task) == 0 or len(new_date) == 0:
             self.infolabel.setText("Please enter a task and a date")
             return None
         elif new_date.isalnum():
             self.infolabel.setText("Incorrect form of date")
             return None
-        elif aaa[0].isalpha() or aaa[1].isalpha() or  aaa[2].isalpha():
-            self.infolabel.setText("Incorrect form of date")  
-            return None
         elif aaa[0].isdigit() == False or aaa[1].isdigit() == False or aaa[2].isdigit() == False:
             self.infolabel.setText("Incorrect form of date")
             return None       
-        elif len(new_date) != 10:
+        elif len(new_date) != 10 :
             self.infolabel.setText("Incorrect form of date")
-            return None    
+            return None
+        elif int(aaa[2]) < 2021 or int(aaa[2]) > 2500:
+            self.infolabel.setText("Year incorrect")
+            return None 
         elif int(aaa[0]) > 31 or int(aaa[1]) > 12:
-            self.infolabel.setText("Date/Month do not exist")
+            self.infolabel.setText("Date/Month does not exist")
             return None
         elif int(aaa[1])%2 ==0 and int(aaa[0])> 30:
-            self.infolabel.setText("Date/Month do not exist")
+            self.infolabel.setText("Date/Month does not exist")
             return None
         elif aaa[1] == "02" and int(aaa[0]) >29:
             self.infolabel.setText("Date/Month do not exist")
             return None
             
-        
     
         self.infolabel.setText("")
         db_cursor.execute("INSERT INTO to_do(task,date) VALUES (:task,:date)",{'task':new_task,'date':new_date})
@@ -241,21 +242,9 @@ class Ui_MainWindow(object):
             db_cursor.execute(f"DELETE FROM to_do WHERE task = '{name.text()}' AND date = '{date.text()}'")
             db_cursor.execute("delete from sqlite_sequence where name='to_do';")
             db.commit()
-
-        db_cursor.execute("SELECT * FROM to_do ")
-        self.tableWidget.clearContents()
-        self.tableWidget.setRowCount(0)
-
-        data = db_cursor.fetchall()
-        #add tasks from database to the table
-        for r1 in range(len(data)):
-            item = data[r1]
-            item = list(item)
-            self.tableWidget.insertRow(r1)
-            self.tableWidget.setItem(r1, 0, QtWidgets.QTableWidgetItem(item[2]))
-            self.tableWidget.setItem(r1, 1, QtWidgets.QTableWidgetItem(item[1]))
-        
-    
+            self.tableWidget.removeRow(index.row())
+            
+            
     
     def clear_task(self):
             self.tableWidget.clearContents()
@@ -265,7 +254,7 @@ class Ui_MainWindow(object):
             db.commit()
      
      
-    #เริ่ม ggcalenndar button    
+    #เริ่ม ggcalenndar  
     def create(self):
         selected = self.tableWidget.selectedItems()
         
@@ -317,9 +306,7 @@ class Ui_MainWindow(object):
         service = Create_Service(CLIENT_SECRET_FILE, API_SERVICE_NAME, API_VERSION, SCOPES)
 
 
-        #create new events
-          
-
+        #create new task/event
             
         def create_event(start_time, summary):
             
@@ -349,13 +336,19 @@ class Ui_MainWindow(object):
             date = self.tableWidget.item(index.row(),0)
             print(f"{name.text()}  : {date.text()}")
             create_event(datetime(int(date.text().split("/")[2]), int(date.text().split("/")[1]),int(date.text().split("/")[0])), f"{name.text()}")
-            self.infolabel.setText("Task created")
+            
+    
+            #popupbox
+            box = QMessageBox()
+            box.setWindowTitle("Created Task !!")
+            box.setText("Your Task Has Been Created !")
+            x = box.exec_()
 
 
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "To-do-list"))
         self.delbut.setText(_translate("MainWindow", "DELETE"))
         self.clearbut.setText(_translate("MainWindow", "CLEAR"))
         self.ggbut.setText(_translate("MainWindow", "GOOGLE \n"
