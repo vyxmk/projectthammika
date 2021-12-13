@@ -17,12 +17,13 @@ from PyQt5.QtWidgets import QMessageBox
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
+        MainWindow.setObjectName("To-do-list")
         MainWindow.setMaximumSize(QtCore.QSize(610, 450))
         MainWindow.resize(610, 450)
         MainWindow.setStyleSheet("background-color: rgb(252, 255, 217);")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+        
         self.delbut = QtWidgets.QPushButton(self.centralwidget)
         self.delbut.setGeometry(QtCore.QRect(75, 380, 120, 40))
         font = QtGui.QFont()
@@ -30,6 +31,7 @@ class Ui_MainWindow(object):
         self.delbut.setFont(font)
         self.delbut.setStyleSheet("background-color: rgb(234, 227, 174);")
         self.delbut.setObjectName("delbut")
+        
         self.clearbut = QtWidgets.QPushButton(self.centralwidget)
         self.clearbut.setGeometry(QtCore.QRect(245, 380, 120, 40))
         font = QtGui.QFont()
@@ -37,6 +39,7 @@ class Ui_MainWindow(object):
         self.clearbut.setFont(font)
         self.clearbut.setStyleSheet("background-color: rgb(234, 227, 174);")
         self.clearbut.setObjectName("clearbut")
+        
         self.ggbut = QtWidgets.QPushButton(self.centralwidget)
         self.ggbut.setGeometry(QtCore.QRect(410, 380, 120, 40))
         font = QtGui.QFont()
@@ -44,6 +47,7 @@ class Ui_MainWindow(object):
         self.ggbut.setFont(font)
         self.ggbut.setStyleSheet("background-color: rgb(234, 227, 174);")
         self.ggbut.setObjectName("ggbut")
+        
         self.addbut = QtWidgets.QPushButton(self.centralwidget)
         self.addbut.setGeometry(QtCore.QRect(450, 85, 90, 40))
         font = QtGui.QFont()
@@ -51,6 +55,7 @@ class Ui_MainWindow(object):
         self.addbut.setFont(font)
         self.addbut.setStyleSheet("background-color: rgb(234, 227, 174);")
         self.addbut.setObjectName("addbut")
+        
         self.datelabel = QtWidgets.QLabel(self.centralwidget)
         self.datelabel.setGeometry(QtCore.QRect(270, 100, 50, 13))
         font = QtGui.QFont()
@@ -62,6 +67,7 @@ class Ui_MainWindow(object):
         self.datelabel.setStyleSheet("\n"
 "color: rgb(144, 112, 37);")
         self.datelabel.setObjectName("datelabel")
+        
         self.tasklabel = QtWidgets.QLabel(self.centralwidget)
         self.tasklabel.setGeometry(QtCore.QRect(60, 100, 47, 13))
         font = QtGui.QFont()
@@ -73,6 +79,7 @@ class Ui_MainWindow(object):
         self.tasklabel.setStyleSheet("\n"
 "color: rgb(144, 112, 37);")
         self.tasklabel.setObjectName("tasklabel")
+        
         self.todolistlabel = QtWidgets.QLabel(self.centralwidget)
         self.todolistlabel.setGeometry(QtCore.QRect(0, 0, 600, 81))
         font = QtGui.QFont()
@@ -87,6 +94,7 @@ class Ui_MainWindow(object):
 "font: 75 48pt \"Century Gothic\";")
         self.todolistlabel.setAlignment(QtCore.Qt.AlignCenter)
         self.todolistlabel.setObjectName("todolistlabel")
+        
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit.setGeometry(QtCore.QRect(120, 90, 140, 30))
         font = QtGui.QFont()
@@ -95,6 +103,7 @@ class Ui_MainWindow(object):
         self.lineEdit.setFont(font)
         self.lineEdit.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.lineEdit.setObjectName("lineEdit")
+        
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
         self.tableWidget.setGeometry(QtCore.QRect(90, 155, 430, 185))
         font = QtGui.QFont()
@@ -119,6 +128,7 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         item.setFont(font)
         self.tableWidget.setHorizontalHeaderItem(1, item)
+        
         self.infolabel = QtWidgets.QLabel(self.centralwidget)
         self.infolabel.setGeometry(QtCore.QRect(0, 130, 611, 21))
         font = QtGui.QFont()
@@ -127,6 +137,7 @@ class Ui_MainWindow(object):
         self.infolabel.setText("")
         self.infolabel.setAlignment(QtCore.Qt.AlignCenter)
         self.infolabel.setObjectName("infolabel")
+        
         self.lineEdit_2 = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit_2.setGeometry(QtCore.QRect(330, 90, 100, 30))
         font = QtGui.QFont()
@@ -159,7 +170,7 @@ class Ui_MainWindow(object):
         db = sqlite3.connect("alltask.db")
         db_cursor = db.cursor()
         try:
-            db_cursor.execute("CREATE TABLE to_do (task text,date text)")
+            db_cursor.execute("CREATE TABLE to_do (id INTEGER PRIMARY KEY AUTOINCREMENT,task text,date text)")
         except:
             pass
 
@@ -183,18 +194,33 @@ class Ui_MainWindow(object):
     def add_task(self):
         new_task = self.lineEdit.text()
         new_date = self.lineEdit_2.text()
+        aaa = new_date.split("/")
         if len(new_task) == 0 or len(new_date) == 0:
             self.infolabel.setText("Please enter a task and a date")
             return None
-        elif new_date.isalpha() or new_date.isalnum():
+        elif new_date.isalnum():
             self.infolabel.setText("Incorrect form of date")
             return None
-        elif len(new_date)<10:
-            self.infolabel.setText("Incorrect form of date/ leading zero is allow")
+        elif aaa[0].isalpha() or aaa[1].isalpha() or  aaa[2].isalpha():
+            self.infolabel.setText("Incorrect form of date")  
             return None
-        
+        elif aaa[0].isdigit() == False or aaa[1].isdigit() == False or aaa[2].isdigit() == False:
+            self.infolabel.setText("Incorrect form of date")
+            return None       
+        elif len(new_date) != 10:
+            self.infolabel.setText("Incorrect form of date")
+            return None    
+        elif int(aaa[0]) > 31 or int(aaa[1]) > 12:
+            self.infolabel.setText("Date/Month do not exist")
+            return None
+        elif int(aaa[1])%2 ==0 and int(aaa[0])> 30:
+            self.infolabel.setText("Date/Month do not exist")
+            return None
+        elif aaa[1] == "02" and int(aaa[0]) >29:
+            self.infolabel.setText("Date/Month do not exist")
+            return None
             
-
+        
     
         self.infolabel.setText("")
         db_cursor.execute("INSERT INTO to_do(task,date) VALUES (:task,:date)",{'task':new_task,'date':new_date})
@@ -311,7 +337,8 @@ class Ui_MainWindow(object):
             'date': end_time.strftime("%Y-%m-%d"),
             'timeZone': 'Asia/Bangkok',
             },
-            }
+            
+        }
 
             return service.events().insert(calendarId = 'primary', body=tasks).execute()
 
@@ -322,6 +349,7 @@ class Ui_MainWindow(object):
             date = self.tableWidget.item(index.row(),0)
             print(f"{name.text()}  : {date.text()}")
             create_event(datetime(int(date.text().split("/")[2]), int(date.text().split("/")[1]),int(date.text().split("/")[0])), f"{name.text()}")
+            self.infolabel.setText("Task created")
 
 
 
