@@ -232,9 +232,10 @@ class Ui_MainWindow(object):
             db.commit()
      
      
-    #เริ่ม ggcalenndar  
+    #start  ggcalenndar  
     def create(self):
         selected = self.tableWidget.selectedItems()
+        
         
         def Create_Service(client_secret_file, api_name, api_version, *scopes, prefix=''):
             CLIENT_SECRET_FILE = client_secret_file
@@ -306,6 +307,7 @@ class Ui_MainWindow(object):
         }
 
             return service.events().insert(calendarId = 'primary', body=tasks).execute()
+        
 
         # add to calendar
         selected = self.tableWidget.selectedItems()
@@ -323,12 +325,11 @@ class Ui_MainWindow(object):
             x = box.exec_()
    
 
-        
-
+    
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "To-Do-List"))
         self.delbut.setText(_translate("MainWindow", "DELETE"))
         self.clearbut.setText(_translate("MainWindow", "CLEAR"))
         self.ggbut.setText(_translate("MainWindow", "GOOGLE \n"
