@@ -1,19 +1,18 @@
 from PyQt5 import QtCore, QtGui, QtWidgets 
+from PyQt5.QtWidgets import QMessageBox
 
 import sqlite3
 
 import pickle
 import os
-import datetime
 from pprint import pprint
 from google_auth_oauthlib.flow import Flow, InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 from google.auth.transport.requests import Request
 
+import datetime
 from datetime import datetime
-from PyQt5.QtWidgets import QMessageBox
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -169,8 +168,14 @@ class Ui_MainWindow(object):
         
     def connect_database(self):
         global db, db_cursor
+        
+        #create a database or connect
         db = sqlite3.connect("task.db")
+        
+        # cursor create
         db_cursor = db.cursor()
+        
+        #create table
         try:
             db_cursor.execute("CREATE TABLE to_do (task text,date text)")
         except:
@@ -214,20 +219,22 @@ class Ui_MainWindow(object):
         
     def remove_task(self):
         selected = self.tableWidget.selectedItems()
-        # delete row
+        # delete row from data
         for index in selected:
             name = self.tableWidget.item(index.row(),1)
             date = self.tableWidget.item(index.row(),0)
             db_cursor.execute(f"DELETE FROM to_do WHERE task = '{name.text()}' AND date = '{date.text()}'")
             db.commit()
+            
             self.tableWidget.removeRow(index.row())
+          
             
-            
-    
+        
     def clear_task(self):
+            # clear from database
             self.tableWidget.clearContents()
             self.tableWidget.setRowCount(0)
-            # clear from database
+            
             db_cursor.execute("DELETE FROM to_do")
             db.commit()
      
@@ -325,7 +332,6 @@ class Ui_MainWindow(object):
             x = box.exec_()
    
 
-    
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
