@@ -3,13 +3,13 @@ from PyQt5.QtWidgets import QMessageBox
 
 import sqlite3
 
-import pickle
-import os
-from pprint import pprint
 from google_auth_oauthlib.flow import Flow, InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 from google.auth.transport.requests import Request
+import pickle
+import os
+from pprint import pprint
 
 import datetime
 from datetime import datetime
@@ -166,6 +166,7 @@ class Ui_MainWindow(object):
         self.connect_database()
         
         
+        
     def connect_database(self):
         global db, db_cursor
         
@@ -181,7 +182,7 @@ class Ui_MainWindow(object):
         except:
             pass
 
-        db_cursor.execute("SELECT * FROM to_do  order by date asc")
+        db_cursor.execute("SELECT * FROM to_do order by date desc")
 
         self.tableWidget.clearContents()
         self.tableWidget.setRowCount(0)
@@ -201,9 +202,9 @@ class Ui_MainWindow(object):
         new_task = self.lineEdit.text()
         new_date = self.dateEdit.date()
         new_date = new_date.toPyDate()
-        new_date = new_date.strftime("%d/%m/%Y")
         
-        if len(new_task) == 0 or len(new_date) == 0:
+        
+        if len(new_task) == 0 == 0:
             self.infolabel.setText("Please type in a task")
             return None
         
@@ -237,6 +238,8 @@ class Ui_MainWindow(object):
             
             db_cursor.execute("DELETE FROM to_do")
             db.commit()
+            
+    
      
      
     #start  ggcalenndar  
@@ -322,7 +325,7 @@ class Ui_MainWindow(object):
             name = self.tableWidget.item(index.row(),1)
             date = self.tableWidget.item(index.row(),0)
             print(f"{name.text()}  : {date.text()}")
-            create_event(datetime(int(date.text().split("/")[2]), int(date.text().split("/")[1]),int(date.text().split("/")[0])), f"{name.text()}")
+            create_event(datetime(int(date.text().split("-")[0]), int(date.text().split("-")[1]),int(date.text().split("-")[2])), f"{name.text()}")
             
     
             #popupbox
