@@ -182,7 +182,7 @@ class Ui_MainWindow(object):
         except:
             pass
 
-        db_cursor.execute("SELECT * FROM to_do order by date desc")
+        db_cursor.execute("SELECT * FROM to_do  order by date desc ")
 
         self.tableWidget.clearContents()
         self.tableWidget.setRowCount(0)
@@ -202,6 +202,7 @@ class Ui_MainWindow(object):
         new_task = self.lineEdit.text()
         new_date = self.dateEdit.date()
         new_date = new_date.toPyDate()
+        
         
         
         if len(new_task) == 0 == 0:
