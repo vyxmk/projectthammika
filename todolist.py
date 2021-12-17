@@ -183,6 +183,7 @@ class Ui_MainWindow(object):
             pass
 
         db_cursor.execute("SELECT * FROM to_do  order by date desc ")
+        
 
         self.tableWidget.clearContents()
         self.tableWidget.setRowCount(0)
@@ -206,7 +207,7 @@ class Ui_MainWindow(object):
         
         
         if len(new_task) == 0 == 0:
-            self.infolabel.setText("Please type in a task")
+            self.infolabel.setText("Please type in a task.")
             return None
         
         self.infolabel.setText("")
